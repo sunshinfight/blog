@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="以字符串为例  字符串的定义和声明在c中字符串是一个数组，只不过约定了终止的位置\0，所以并不需要显式的传递长度。下面给出定义字符串的几种方式：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C中的数组和指针">
+<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;posts&#x2F;array_and_ptr_in_c&#x2F;index.html">
+<meta property="og:site_name" content="zjx&#39;s notes">
+<meta property="og:description" content="以字符串为例  字符串的定义和声明在c中字符串是一个数组，只不过约定了终止的位置\0，所以并不需要显式的传递长度。下面给出定义字符串的几种方式：">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-12-16T04:41:00.000Z">
+<meta property="article:modified_time" content="2019-12-16T04:41:00.000Z">
+<meta property="article:author" content="zjx">
+<meta property="article:tag" content="c&#x2F;c++">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/posts/array_and_ptr_in_c/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>C中的数组和指针 | zjx's notes</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">zjx's notes</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/posts/array_and_ptr_in_c/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="zjx">
+      <meta itemprop="description" content="不积跬步，无以至千里">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="zjx's notes">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          C中的数组和指针
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-12-16 12:41:00" itemprop="dateCreated datePublished" datetime="2019-12-16T12:41:00+08:00">2019-12-16</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%8A%80%E6%9C%AF/" itemprop="url" rel="index"><span itemprop="name">技术</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>以字符串为例</p>
+</blockquote>
+<h3 id="字符串的定义和声明"><a href="#字符串的定义和声明" class="headerlink" title="字符串的定义和声明"></a>字符串的定义和声明</h3><p>在c中字符串是一个数组，只不过约定了终止的位置<code>\0</code>，所以并不需要显式的传递长度。下面给出定义字符串的几种方式：</p>
+<a id="more"></a>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span> *a = <span class="string">"hello"</span>; </span><br><span class="line"><span class="keyword">char</span> b[] = <span class="string">"hello"</span>;</span><br><span class="line"><span class="keyword">char</span> c[<span class="number">6</span>] = <span class="string">"hello"</span>; <span class="comment">// 不要忘记\0所占的字节</span></span><br></pre></td></tr></table></figure>
+
+<p>这三种方式，有两种是相同的：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span> b[] = <span class="string">"hello"</span>;</span><br><span class="line"><span class="keyword">char</span> c[<span class="number">6</span>] = <span class="string">"hello"</span>;</span><br></pre></td></tr></table></figure>
+
+<p><code>b</code>在定义时虽然没有输入数组的大小，但是在编译期由编译器进行推断得到长度。</p>
+<p><code>a</code>的定义与<code>a, b</code>有着很大的差异。<code>a</code>是定义了一个char型指针，也就是a中存储的是字符串的第一个字符的地址（也就是平时说的<code>指向第一个字符的指针</code>）。</p>
+<p>下面通过一段汇编具体查看下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span> *a = <span class="string">"hello"</span>; </span><br><span class="line"><span class="keyword">char</span> b[] = <span class="string">"hello"</span>;</span><br><span class="line"><span class="keyword">char</span> c[<span class="number">6</span>] = <span class="string">"hello"</span>; <span class="comment">// 不要忘记\0所占的字节</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 编译后的汇编码 gcc -S </span></span><br><span class="line">...</span><br><span class="line">movq	$.LC0, <span class="number">-8</span>(%rbp) <span class="comment">// char *a的定义方式字符串将作为字符串常量存储在data段，所以这也是为什么a这种定义是不可以改变的字符串常量。</span></span><br><span class="line"></span><br><span class="line">movl	$<span class="number">1819043176</span>, <span class="number">-16</span>(%rbp)  <span class="comment">// char b[] 的定义方式将会存储在text段，在代码运行时将放入栈中</span></span><br><span class="line">movw	$<span class="number">111</span>, <span class="number">-12</span>(%rbp)</span><br><span class="line"></span><br><span class="line">movl	$<span class="number">1819043176</span>, <span class="number">-32</span>(%rbp) <span class="comment">// char c[6] 的定义方式与b相同</span></span><br><span class="line">movw	$<span class="number">111</span>, <span class="number">-28</span>(%rbp)</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>上述说的都是定义时的情况，在说声明之前，先来区分一下声明和定义两个概念</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// main.c</span></span><br><span class="line"><span class="keyword">extern</span> <span class="keyword">char</span> name[]; <span class="comment">// 这是声明</span></span><br><span class="line"><span class="keyword">int</span> age;    <span class="comment">// 这是定义</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// hello.c</span></span><br><span class="line"><span class="keyword">char</span> name[] = <span class="string">"James"</span>;  <span class="comment">// 这是定义</span></span><br><span class="line"><span class="keyword">char</span> world[<span class="number">6</span>];  <span class="comment">// 这是定义</span></span><br></pre></td></tr></table></figure>
+
+<p>区分的声明和定义的关键在于：声明只是说存在这么个对象，定义是真正为对象分配内存的行为。所以声明可以存在多个，但是定义只能存在一个。</p>
+<p>在声明时需要严格遵循具体的类型，这是不能混淆的：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// main.c</span></span><br><span class="line"><span class="keyword">extern</span> <span class="keyword">char</span> *a; <span class="comment">// compiling error</span></span><br><span class="line"><span class="keyword">extern</span> <span class="keyword">char</span> a[]; <span class="comment">// ok</span></span><br><span class="line"><span class="keyword">extern</span> <span class="keyword">char</span> a[<span class="number">4</span>]; <span class="comment">// ok</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// hello.c</span></span><br><span class="line"><span class="keyword">char</span> a[<span class="number">4</span>] = <span class="string">"abc"</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="在表达式中"><a href="#在表达式中" class="headerlink" title="在表达式中"></a>在表达式中</h3><p>表达式中大多可以像指针一样使用数组：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span> a[] = <span class="string">"James"</span>;</span><br><span class="line"><span class="keyword">char</span> *b = a;</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%c\n"</span>, *(a+<span class="number">1</span>)); <span class="comment">// a</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%c\n"</span>, *(b+<span class="number">1</span>)); <span class="comment">// a</span></span><br></pre></td></tr></table></figure>
+
+<p>表达式中的数组名被编译器当作一个指向该数组第一个元素的指针。并且指针的偏移量与下标总是相同。</p>
+<p>所以这也是为什么在表达式中数组名经常可以像指针一样使用。但与指针定义的字符串<code>char *c = &quot;abc&quot;</code>明显不同的是：</p>
+<ol>
+<li>数组名是不可变的，即不能作为左值，例如对数组名做自增自减都会编译错误</li>
+<li>指针定义的字符串是不可变的，放在data段</li>
+</ol>
+<p>在使用数组指针时应该注意一些小问题，这也是两者虽然看起来相同，但是有区别的地方：</p>
+<ol>
+<li>sizeof()指针和数组名是不同的</li>
+<li><code>char a[] = &quot;abc&quot;; char *c = &quot;abc&quot;;</code> 分别对<code>&amp;a</code>, <code>&amp;c</code>,显然是不同的</li>
+<li>指针必须分配空间</li>
+</ol>
+<h3 id="在函数原型中"><a href="#在函数原型中" class="headerlink" title="在函数原型中"></a>在函数原型中</h3><p>下面三个函数原型是一样的</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">show</span><span class="params">(<span class="keyword">char</span> *c)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">show</span><span class="params">(<span class="keyword">char</span> c[])</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">show</span><span class="params">(<span class="keyword">char</span> c[<span class="number">100</span>])</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>数组在作为参数传递时会被编译器作为指向第一个元素的指针。所以在函数中使用参数传递来的数组也面临与在表达式中同样的问题（上述需要注意的一些问题）。数组作为参数时仅仅只能作为指向第一个元素的指针进行传递是出于效率的考虑，因为函数有自己的空间，参数是会被复制的，复制数组开销是很大的。</p>
+<h3 id="混淆点"><a href="#混淆点" class="headerlink" title="混淆点"></a>混淆点</h3><p>主要是因为在表达式和函数原型中的通用形式，导致容易产生混淆。表达式和函数原型两者看起来能通用其实是因为编译器将数组转化为了指向第一个元素的指针。</p>
+<p>因为在debug这两者时，可能使用以下形式进行测试：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span> a[] = <span class="string">"ab"</span>;</span><br><span class="line"><span class="keyword">char</span> *b = a;</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%p\n"</span>, a);  <span class="comment">// 0x123</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%p\n"</span>, b);  <span class="comment">// 0x123</span></span><br></pre></td></tr></table></figure>
+
+<p>竟然发现a,b 相同，觉得自然数组名与指针时一样的。但是考虑下面的代码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">printf</span>(<span class="string">"size of a: %lu\n"</span>, <span class="keyword">sizeof</span>(a)); <span class="comment">// size of a: 3</span></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"size of b: %lu\n"</span>, <span class="keyword">sizeof</span>(b)); <span class="comment">// size of b: 8</span></span><br></pre></td></tr></table></figure>
+
+<p>a与b又是不相同的。这里就产生了混淆。其实这是由于编译器的行为导致的（c标准就是这个定的）。sizeof也不是函数，这是个运算符，所以没有发生如上述所说函数原型中数组的转化。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 这是调用sizeof所发生的，编译期编译器会根据数组名或指针选择不同的sizeof运算符（有array和pointer两个）。</span></span><br><span class="line">movl    $<span class="number">3</span>, <span class="number">-4</span>(%rbp)</span><br><span class="line">movl    $<span class="number">8</span>, <span class="number">-8</span>(%rbp)</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/c-c/" rel="tag"># c/c++</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/posts/oc_memory_management/" rel="next" title="OC 内存管理">
+      OC 内存管理 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#字符串的定义和声明"><span class="nav-number">1.</span> <span class="nav-text">字符串的定义和声明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#在表达式中"><span class="nav-number">2.</span> <span class="nav-text">在表达式中</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#在函数原型中"><span class="nav-number">3.</span> <span class="nav-text">在函数原型中</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#混淆点"><span class="nav-number">4.</span> <span class="nav-text">混淆点</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">zjx</p>
+  <div class="site-description" itemprop="description">不积跬步，无以至千里</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分类</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">zjx</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

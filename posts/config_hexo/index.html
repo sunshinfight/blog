@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="hexo 安装首先是得安装node.js，去官网下载就好了，安装完后，使用自带的npm包管理安装hexonpm install hero -g。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="hexo的配置和使用">
+<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;posts&#x2F;config_hexo&#x2F;index.html">
+<meta property="og:site_name" content="zjx&#39;s notes">
+<meta property="og:description" content="hexo 安装首先是得安装node.js，去官网下载就好了，安装完后，使用自带的npm包管理安装hexonpm install hero -g。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-04-07T14:18:22.890Z">
+<meta property="article:modified_time" content="2020-04-07T14:18:22.890Z">
+<meta property="article:author" content="zjx">
+<meta property="article:tag" content="iOS">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/posts/config_hexo/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>hexo的配置和使用 | zjx's notes</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">zjx's notes</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/posts/config_hexo/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="zjx">
+      <meta itemprop="description" content="不积跬步，无以至千里">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="zjx's notes">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          hexo的配置和使用
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-07 22:18:22" itemprop="dateCreated datePublished" datetime="2020-04-07T22:18:22+08:00">2020-04-07</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="hexo-安装"><a href="#hexo-安装" class="headerlink" title="hexo 安装"></a>hexo 安装</h3><p>首先是得安装node.js，去官网下载就好了，安装完后，使用自带的npm包管理安装hexo<code>npm install hero -g</code>。</p>
+<a id="more"></a>
+
+<h3 id="hexo-使用-github-构建博客站"><a href="#hexo-使用-github-构建博客站" class="headerlink" title="hexo 使用 github 构建博客站"></a>hexo 使用 github 构建博客站</h3><p>找到合适的文件夹下，初始化博客<code>npm init blog-hexo</code>等待完成后会在当前目录下生成blog-hexo文件夹。</p>
+<h4 id="blog-简单的配置"><a href="#blog-简单的配置" class="headerlink" title="blog 简单的配置"></a>blog 简单的配置</h4><p><code>./_config.yml</code>文件是blog的配置文件。</p>
+<h4 id="配置-next-主题"><a href="#配置-next-主题" class="headerlink" title="配置 next 主题"></a>配置 next 主题</h4><p>主题随意去选，然后将主题clone到<code>./themes</code> 文件夹下，我选择next主题。</p>
+<ol>
+<li><p>先把服务启动起来 <code>hexo s</code> ，然后再浏览器中打开，这样就可以一边修改，一边刷新来查看效果是否满意</p>
+</li>
+<li><p>修改blog到配置文件<code>./_config.yml</code>，搜索theme，修改为<code>theme: next</code>那么就代表使用了next主题，会使用themes文件夹下next文件夹中的样式进行渲染</p>
+</li>
+<li><p>然后next主题也有它自己的配置，配置文件为<code>./themes/next/_config.yml</code>。不同的主题有不同的配置项，next中主要修改的配置项为：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> ./themes/next/_config.yml</span></span><br><span class="line">scheme: Mist</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果需要部署到 github 的 pages 服务，那么首先是在github上创建新项目，并且配置pages服务。</p>
+</li>
+<li><p>安装部署插件<code>npm install hexo-deployer-git --save</code>，为部署添加配置。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> ./_config.yml</span></span><br><span class="line">deploy:</span><br><span class="line">	type: git</span><br><span class="line">	repo: [你的仓库，例如：https://github.com/dachui/xiaomei.git]</span><br><span class="line">	branch: master # 当然这里使用其他分支也没有问题</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>清理<code>hexo clean</code>，构建<code>hexo g</code>，部署<code>hexo d</code></p>
+</li>
+</ol>
+<h3 id="使用-markdown-写博客"><a href="#使用-markdown-写博客" class="headerlink" title="使用 markdown 写博客"></a>使用 markdown 写博客</h3><p>下载<code>typora</code>，自从发现了这个 <code>markdown</code> 编辑器，再也不想用其他的了。</p>
+<ol>
+<li><p>hexo渲染模版中的一些独特的语法</p>
+<ul>
+<li><!--more-->
+
+<p>在md文件中使用该标志，代表在这个标志之前的是文章摘要部分，在home中post列表中，文章会根据这个标志展示，之后紧跟阅读更多按钮</p>
+</li>
+<li><p>Front-matter</p>
+<p>每个文章，都有头，这个头为hexo分类渲染提供信息。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">---</span><br><span class="line">title: Hello World	# 标题</span><br><span class="line">date: 2013/7/13 20:46:25	# 创建日期</span><br><span class="line">updated: 2014/7/7 20:11:11	# 最近更新日期</span><br><span class="line">comments: true	# 开启文章评论功能</span><br><span class="line">tags:</span><br><span class="line">- PS3</span><br><span class="line">- Games</span><br><span class="line">categories:</span><br><span class="line">- [Games, happy] # 这是同级</span><br><span class="line">- fps	#	这个是games是上面两个的子分类，这个还是简单用比较好</span><br><span class="line">permalink: # 覆盖文章网址，不知道是啥</span><br><span class="line">keywords: # 不建议使用。。</span><br><span class="line">---</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>hexo 功能扩展和自定义</p>
+<ul>
+<li><p>图片的处理</p>
+<p>可以不使用图床，配合typora的自定义图片路径和hexo插件可实现图片添加。但是觉得还是不太建议使用图片，因为迁移的话可能会有些资源路径不对的麻烦事。</p>
+</li>
+<li><p>图片可以使用，但是尽量少用吧，所以添加对图标的支持–mermaid</p>
+<p>首先安装插件<code>npm install hexo-filter-mermaid-diagrams</code></p>
+<p>然后修改<code>themes/next/layout/_partials/footer.swig</code>文件，添加<code>&lt;script src=&#39;https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js&#39;&gt;&lt;/script&gt;</code>。</p>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="hexo-plugin"><a href="#hexo-plugin" class="headerlink" title="hexo plugin"></a>hexo plugin</h3><p>具体有需求可以去<a href="https://hexo.io/plugins/" target="_blank" rel="noopener">此处</a>看看。</p>
+<h3 id="hexo-cheat-sheet"><a href="#hexo-cheat-sheet" class="headerlink" title="hexo cheat sheet"></a>hexo cheat sheet</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">hexo init [name]	# 初始化blog</span><br><span class="line">hexo n [name]	# 新文章</span><br><span class="line">hexo g	# 构建blog</span><br><span class="line">hexo s 	# 启动服务</span><br><span class="line">hexo d	# 部署blog</span><br><span class="line">hexo clean	# 清理缓存</span><br></pre></td></tr></table></figure>
+
+
+
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/posts/oc_memory_management/" rel="prev" title="OC 内存管理">
+      <i class="fa fa-chevron-left"></i> OC 内存管理
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/swift/ContiguousArray%E7%9A%84%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" rel="next" title="swift/ContiguousArray的内存模型">
+      swift/ContiguousArray的内存模型 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#hexo-安装"><span class="nav-number">1.</span> <span class="nav-text">hexo 安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#hexo-使用-github-构建博客站"><span class="nav-number">2.</span> <span class="nav-text">hexo 使用 github 构建博客站</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#blog-简单的配置"><span class="nav-number">2.1.</span> <span class="nav-text">blog 简单的配置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#配置-next-主题"><span class="nav-number">2.2.</span> <span class="nav-text">配置 next 主题</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用-markdown-写博客"><span class="nav-number">3.</span> <span class="nav-text">使用 markdown 写博客</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#hexo-plugin"><span class="nav-number">4.</span> <span class="nav-text">hexo plugin</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#hexo-cheat-sheet"><span class="nav-number">5.</span> <span class="nav-text">hexo cheat sheet</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">zjx</p>
+  <div class="site-description" itemprop="description">不积跬步，无以至千里</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分类</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">zjx</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

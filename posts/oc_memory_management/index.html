@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="释放掉不用的内存，保证还可能被使用的内存不会被回收。这是内存管理要做的的事情，OC是通过引用计数来管理的，MRC和ARC的区分只是：引用计数是由程序员还是编译器和语言来负责管理。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OC 内存管理">
+<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;posts&#x2F;oc_memory_management&#x2F;index.html">
+<meta property="og:site_name" content="zjx&#39;s notes">
+<meta property="og:description" content="释放掉不用的内存，保证还可能被使用的内存不会被回收。这是内存管理要做的的事情，OC是通过引用计数来管理的，MRC和ARC的区分只是：引用计数是由程序员还是编译器和语言来负责管理。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-04-07T14:18:22.889Z">
+<meta property="article:modified_time" content="2020-04-07T14:18:22.889Z">
+<meta property="article:author" content="zjx">
+<meta property="article:tag" content="iOS">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/posts/oc_memory_management/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>OC 内存管理 | zjx's notes</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">zjx's notes</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/posts/oc_memory_management/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="zjx">
+      <meta itemprop="description" content="不积跬步，无以至千里">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="zjx's notes">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          OC 内存管理
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-07 22:18:22" itemprop="dateCreated datePublished" datetime="2020-04-07T22:18:22+08:00">2020-04-07</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>释放掉不用的内存，保证还可能被使用的内存不会被回收。这是内存管理要做的的事情，OC是通过引用计数来管理的，MRC和ARC的区分只是：引用计数是由程序员还是编译器和语言来负责管理。</p>
+</blockquote>
+<a id="more"></a>
+
+<h3 id="为啥要使用引用计数"><a href="#为啥要使用引用计数" class="headerlink" title="为啥要使用引用计数"></a>为啥要使用引用计数</h3><p>在c中堆中的对象是由程序员负责的：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// malloc必须和free成对出现</span></span><br><span class="line"><span class="keyword">char</span> *str = (<span class="keyword">char</span>*)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(<span class="keyword">char</span>)*<span class="number">10</span>);</span><br><span class="line"><span class="comment">// do something</span></span><br><span class="line"><span class="comment">// 如果忘了free就泄漏了10个字节的内存，如果多次free，那将导致崩溃</span></span><br><span class="line"><span class="built_in">free</span>(str);</span><br><span class="line"><span class="comment">// 如果此时又使用了str，这块内存可能已经分配做其他用途了，所以行为是不确定的</span></span><br><span class="line"><span class="comment">// do not use str</span></span><br></pre></td></tr></table></figure>
+<p>看起来好像很简单，但是在<code>do something</code>的过程中可能经历里很多的，所以说保证这块内存的正确使用完全依靠程序员，有很大的风险，而且调试指针异常也是很麻烦的。</p>
+<h3 id="OC中的引用计数"><a href="#OC中的引用计数" class="headerlink" title="OC中的引用计数"></a>OC中的引用计数</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; NSObject 提供的引用计数的功能</span><br><span class="line">- (instancetype)retain OBJC_ARC_UNAVAILABLE;    &#x2F;&#x2F; rc++</span><br><span class="line">- (oneway void)release OBJC_ARC_UNAVAILABLE;    &#x2F;&#x2F; rc--，若rc&#x3D;&#x3D;0，则释放该实例对象</span><br><span class="line">- (instancetype)autorelease OBJC_ARC_UNAVAILABLE;   &#x2F;&#x2F; 延迟释放</span><br></pre></td></tr></table></figure>
+<p>苹果<a href="https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/MemoryMgmt/Articles/mmRules.html#//apple_ref/doc/uid/20000994-BAJHFBGH" target="_blank" rel="noopener">内存管理文档</a>给出了使用引用计数的原则：</p>
+<ol>
+<li>你拥有你创建的任何对象，调用命名上为“alloc”, “new”, “copy”, or “mutableCopy”的函数，将获得一个有所有权的实例对象(You own any object you create)<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 这个NSObject的实例对象属于obj，也就是obj拥有NSObject的实例对象</span></span><br><span class="line"><span class="built_in">NSObject</span> *obj = [[<span class="built_in">NSObject</span> alloc] init];</span><br></pre></td></tr></table></figure></li>
+<li>可以使用retain获取对象的所有权<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 这个NSObject的实例对象属于obj，也就是obj拥有NSObject的实例对象</span><br><span class="line">NSObject *obj &#x3D; [[NSObject alloc] init];</span><br><span class="line">&#x2F;&#x2F; 通过retain方法，这个对象也属于obj1了</span><br><span class="line">NSObject *obj1 &#x3D; [obj retain];</span><br></pre></td></tr></table></figure></li>
+<li>当不再需要它时，必须放弃你拥有的对象的所有权<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 这个NSObject的实例对象属于obj，也就是obj拥有NSObject的实例对象</span></span><br><span class="line"><span class="built_in">NSObject</span> *obj = [[<span class="built_in">NSObject</span> alloc] init];</span><br><span class="line"><span class="comment">// 通过retain方法，这个对象也属于obj1了</span></span><br><span class="line"><span class="built_in">NSObject</span> *obj1 = [obj <span class="keyword">retain</span>];</span><br><span class="line"><span class="comment">// 通过release方法，放弃objc1对这个实例对象的所有权</span></span><br><span class="line">[objc1 release];</span><br></pre></td></tr></table></figure></li>
+<li>不能放弃没有拥有权对象的所有权<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 根据1中的命名规则，str没有这个NSString实例对象的所有权</span></span><br><span class="line"><span class="built_in">NSString</span> *str = [<span class="built_in">NSString</span> stringWithFormat:<span class="string">@"hello NSString"</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">// 所以如下，释放一个没有所有权实例对象的所有权是错误的</span></span><br><span class="line">[str release];</span><br></pre></td></tr></table></figure>
+<h4 id="关于autorelease-延时释放"><a href="#关于autorelease-延时释放" class="headerlink" title="关于autorelease(延时释放)"></a>关于autorelease(延时释放)</h4><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line">- (<span class="keyword">id</span>)myMethod &#123;</span><br><span class="line">    <span class="comment">// obj 拥有 MyObject实例对象的所有权，引用计数为1</span></span><br><span class="line">    MyObject *obj = [[MyObject alloc] init];</span><br><span class="line">    <span class="comment">// 如果按照上述苹果的内存管理原则3，你需要在return前release obj，但是如果release了就被回收了</span></span><br><span class="line">    <span class="comment">// 这就用到了autorelease 将对象延时释放</span></span><br><span class="line">    <span class="keyword">return</span> [obj autorelease];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+autorelease的实现是要配合autoreleasepool来完成的，AutoreleasePoolPage是由一个双向链表实现的栈，每个节点一个虚页的大小。autorelease消息实际是将obj push到栈中，并在pop时进行release。</li>
+</ol>
+<h3 id="MRC与ARC"><a href="#MRC与ARC" class="headerlink" title="MRC与ARC"></a>MRC与ARC</h3><p>MRC：手动引用计数，需要我们手动控制拥有权，也就是负责发送retain release autorelease消息。<br>ARC：通过分析编译生成的语法树，编译器帮我们自动插入引用计数相关的代码。</p>
+<h3 id="ARC存在的问题和解决方法"><a href="#ARC存在的问题和解决方法" class="headerlink" title="ARC存在的问题和解决方法"></a>ARC存在的问题和解决方法</h3><p>考虑如下代码：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ARC环境下</span></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">Person</span> : <span class="title">NSObject</span> &lt;<span class="title">NSMutableCopying</span>, <span class="title">NSCopying</span>&gt;</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">copy</span>)<span class="built_in">NSString</span> *name;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>)Person *partner;</span><br><span class="line">+(<span class="keyword">instancetype</span>) personWithName: (<span class="built_in">NSString</span>*)name;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line">Person *xiaohong = [Person personWithName: <span class="string">@"xiaohong"</span>];</span><br><span class="line">Person *xiaoming = [Person personWithName: <span class="string">@"xiaoming"</span>];</span><br><span class="line">xiaohong.partner = xiaoming;</span><br><span class="line">xiaoming.partner = xiaohong;</span><br></pre></td></tr></table></figure>
+<p>在上述代码中，<code>xiaohong</code>和<code>xiaoming</code>如果没有其他的引用，那么最终他们的引用计数都为1，所以他们都不能被释放，又因为不能被释放的原因是<code>xiaohong</code>引用<code>xiaoming</code>导致<code>xiaoming</code>不能被释放，<code>xiaoming</code>引用<code>xiaohong</code>导致<code>xiaohong</code>不能被释放，如下图，所以称为循环引用</p>
+<pre class="mermaid">graph LR
+
+xiaohong[xiaohong] --> xiaoming[xiaoming]
+xiaoming --> xiaohong</pre>
+
+<p>如何解决循环引用呢，首先选择一方放弃对另一方的引用，例如<code>xiaohong.partner = nil;</code>，如下图所示，此时没有对象引用<code>xiaoming</code>，所以释放，在<code>xiaoming</code>调用<code>dealloc</code>时将会放弃对<code>xiaohong</code>的引用，所以<code>xiaohong</code>也能得以正确释放。</p>
+<pre class="mermaid">graph LR
+xiaohong[xiaohong] -- x --> xiaoming[xiaoming]
+xiaoming --> xiaohong</pre>
+
+
+
+<h4 id="使用weak来解决循环引用"><a href="#使用weak来解决循环引用" class="headerlink" title="使用weak来解决循环引用"></a>使用weak来解决循环引用</h4><p>在使用weak关键字时需要注意的一点是需要确认weak引用的对象生命周期是否符合需求，虽然向weak指针发送消息并不会造成崩溃。</p>
+<h3 id="Core-Foundation和ARC"><a href="#Core-Foundation和ARC" class="headerlink" title="Core Foundation和ARC"></a>Core Foundation和ARC</h3><p>ARC是针对于NSObject的一套方法，所以在Core Framework是不适用的，OC中的一些对象与Core Frameword又是toll-bridge(就是可以进行简单的相互转换)的，虽然结构可以相互转换，但是还需要考虑所有权的问题，即谁来负责release的工作。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 即使是两种结构是toll-bridge的，我们也不能简单的类似于(NSString*)的指针强转，因为还有所有权问题(引用计数)</span><br><span class="line">&#x2F;&#x2F; cf与NSObject结构相互转化的关键字</span><br><span class="line">__bridge    &#x2F;&#x2F; NSObject &lt;-&gt; cf 不改变所有权</span><br><span class="line">__bridge_retained   &#x2F;&#x2F; NSObject -&gt; cf   将所有权从ARC交给CF的引用计数   </span><br><span class="line">__bridge_transfer   &#x2F;&#x2F; cf -&gt; NSObject   将所有权从CF的引用计数交给ARC</span><br></pre></td></tr></table></figure>
+<p>在实际使用的过程中，无非两种情况，内存管理最终交由谁处理呢？</p>
+<h4 id="1-最终由ARC负责内存管理"><a href="#1-最终由ARC负责内存管理" class="headerlink" title="1. 最终由ARC负责内存管理"></a>1. 最终由ARC负责内存管理</h4><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// case 1 这应该是最常用的方式</span></span><br><span class="line">    <span class="built_in">NSString</span> *str = [[<span class="built_in">NSString</span> alloc]initWithFormat:<span class="string">@"test"</span>];  </span><br><span class="line">    <span class="built_in">CFStringRef</span> cfStr = (__bridge <span class="built_in">CFStringRef</span>)str; <span class="comment">// 不改变所有权，类似于(CFStringRef)str</span></span><br><span class="line">    </span><br><span class="line"><span class="comment">// case 2 </span></span><br><span class="line">    <span class="built_in">CFStringRef</span> cfName = ABRecordCopyValue(person, kABPersonFirstNameProperty);</span><br><span class="line">    <span class="built_in">NSString</span> *name = (__bridge_transfer <span class="built_in">NSString</span>*)cfName;   <span class="comment">// 将所有权从CF的引用计数交给ARC</span></span><br><span class="line">    </span><br><span class="line"><span class="comment">// case 3   下面实际是发生了所有权变化，但经过步骤1，2最终又将所有权交给了ARC</span></span><br><span class="line">    <span class="built_in">NSString</span> *str = [[<span class="built_in">NSString</span> alloc]initWithFormat:<span class="string">@"test"</span>];  </span><br><span class="line">    <span class="built_in">CFStringRef</span> cfStr = (__bridge_retained <span class="built_in">CFStringRef</span>)str; <span class="comment">// 1. 将所有权从ARC交给CF的引用计数</span></span><br><span class="line">    str = (__bridge_transfer <span class="built_in">NSString</span>*)cfstr;  <span class="comment">// 2. 将所有权从CF的引用计数交给ARC</span></span><br></pre></td></tr></table></figure>
+<h4 id="2-最终由CF的引用计数负责"><a href="#2-最终由CF的引用计数负责" class="headerlink" title="2. 最终由CF的引用计数负责"></a>2. 最终由CF的引用计数负责</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">NSString *str &#x3D; [[NSString alloc]initWithFormat:@&quot;test&quot;];  </span><br><span class="line">CFStringRef cfStr &#x3D; (__bridge_retained CFStringRef)str; &#x2F;&#x2F; 将所有权从ARC交给CF的引用计数</span><br><span class="line">CFRelease(cfStr); &#x2F;&#x2F; 由CF的内存管理负责回收</span><br></pre></td></tr></table></figure>
+
+<h3 id="由objc-associated-object-引发的循环引用"><a href="#由objc-associated-object-引发的循环引用" class="headerlink" title="由objc associated object 引发的循环引用"></a>由objc associated object 引发的循环引用</h3><p>在category增加property时我们很有可能会使用associated object</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 获取与self associal 的object</span></span><br><span class="line">objc_getAssociatedObject(<span class="keyword">self</span>, &amp;key);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 设置与self associal 的object</span></span><br><span class="line">objc_setAssociatedObject(<span class="keyword">self</span>, &amp;key, retainAssocialValueInCategory, OBJC_ASSOCIATION_RETAIN_NONATOMIC);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// associal的object与self的四种关系</span></span><br><span class="line"><span class="keyword">typedef</span> OBJC_ENUM(uintptr_t, objc_AssociationPolicy) &#123;</span><br><span class="line">    OBJC_ASSOCIATION_ASSIGN = <span class="number">0</span>,           <span class="comment">/**&lt; Specifies a weak reference to the associated object. */</span></span><br><span class="line">    OBJC_ASSOCIATION_RETAIN_NONATOMIC = <span class="number">1</span>, <span class="comment">/**&lt; Specifies a strong reference to the associated object. </span></span><br><span class="line"><span class="comment">                                            *   The association is not made atomically. */</span></span><br><span class="line">    OBJC_ASSOCIATION_COPY_NONATOMIC = <span class="number">3</span>,   <span class="comment">/**&lt; Specifies that the associated object is copied. </span></span><br><span class="line"><span class="comment">                                            *   The association is not made atomically. */</span></span><br><span class="line">    OBJC_ASSOCIATION_RETAIN = <span class="number">01401</span>,       <span class="comment">/**&lt; Specifies a strong reference to the associated object.</span></span><br><span class="line"><span class="comment">                                            *   The association is made atomically. */</span></span><br><span class="line">    OBJC_ASSOCIATION_COPY = <span class="number">01403</span>          <span class="comment">/**&lt; Specifies that the associated object is copied.</span></span><br><span class="line"><span class="comment">                                            *   The association is made atomically. */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>如果有如下代码：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">Person</span>: <span class="title">NSObject</span> </span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@property</span> <span class="built_in">NSString</span> *name;</span><br><span class="line"><span class="keyword">@property</span> Person *partener;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">Person</span></span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">char</span> partenerAssocialKey;</span><br><span class="line">- (<span class="keyword">void</span>)setPartener: (Person*)partener &#123;</span><br><span class="line">    objc_setAssociatedObject(<span class="keyword">self</span>, &amp;partenerAssocialKey, partener, OBJC_ASSOCIATION_RETAIN_NONATOMIC);</span><br><span class="line">&#125;</span><br><span class="line">- (Person*)partener &#123;</span><br><span class="line">    <span class="keyword">return</span> objc_getAssociatedObject(<span class="keyword">self</span>, &amp;partenerAssocialKey);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line">Person *xiaoming = [[Person alloc] init];</span><br><span class="line">Person *xiaohong = [[Person alloc] init];</span><br><span class="line">xiaoming.name = <span class="string">@"xiaoming"</span>;</span><br><span class="line">xiaohong.name = <span class="string">@"xiaohong"</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 引用循环，由associal object 引起</span></span><br><span class="line">xiaoming.partener = xiaohong;</span><br><span class="line">xiaohong.partener = xiaoming;</span><br></pre></td></tr></table></figure>
+
+<p>解决方案也比较简单</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 加一层包装</span></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">CD_weakAssociatedObject</span> : <span class="title">NSObject</span></span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">weak</span>) <span class="keyword">id</span> value;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">CD_weakAssociatedObject</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 实现非原子的set associate方法</span></span><br><span class="line"><span class="keyword">void</span> cd_setWeakAssociatedObject(<span class="keyword">id</span> _Nonnull object, <span class="keyword">id</span> _Nullable value, <span class="keyword">const</span> <span class="keyword">void</span>* _Nonnull key) &#123;</span><br><span class="line">    CD_weakAssociatedObject *obj = objc_getAssociatedObject(object, key);</span><br><span class="line">    <span class="keyword">if</span> (!obj) &#123;</span><br><span class="line">        obj = [[CD_weakAssociatedObject alloc] init];</span><br><span class="line">        objc_setAssociatedObject(object, key, obj, OBJC_ASSOCIATION_RETAIN);</span><br><span class="line">    &#125;</span><br><span class="line">    obj.value = value;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// get</span></span><br><span class="line"><span class="keyword">id</span> _Nonnull cd_getWeakAssociatedObject(<span class="keyword">id</span> _Nonnull object, <span class="keyword">const</span> <span class="keyword">void</span>* _Nonnull key) &#123;</span><br><span class="line">    CD_weakAssociatedObject *obj = objc_getAssociatedObject(object, key);</span><br><span class="line">    <span class="keyword">if</span> (obj) &#123;</span><br><span class="line">        <span class="keyword">return</span> obj.value;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>通过添加对associated object的一层包装，实现指向associated object的弱引用</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/posts/array_and_ptr_in_c/" rel="prev" title="C中的数组和指针">
+      <i class="fa fa-chevron-left"></i> C中的数组和指针
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/posts/config_hexo/" rel="next" title="hexo的配置和使用">
+      hexo的配置和使用 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#为啥要使用引用计数"><span class="nav-number">1.</span> <span class="nav-text">为啥要使用引用计数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#OC中的引用计数"><span class="nav-number">2.</span> <span class="nav-text">OC中的引用计数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#关于autorelease-延时释放"><span class="nav-number">2.1.</span> <span class="nav-text">关于autorelease(延时释放)</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MRC与ARC"><span class="nav-number">3.</span> <span class="nav-text">MRC与ARC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ARC存在的问题和解决方法"><span class="nav-number">4.</span> <span class="nav-text">ARC存在的问题和解决方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#使用weak来解决循环引用"><span class="nav-number">4.1.</span> <span class="nav-text">使用weak来解决循环引用</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Core-Foundation和ARC"><span class="nav-number">5.</span> <span class="nav-text">Core Foundation和ARC</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-最终由ARC负责内存管理"><span class="nav-number">5.1.</span> <span class="nav-text">1. 最终由ARC负责内存管理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-最终由CF的引用计数负责"><span class="nav-number">5.2.</span> <span class="nav-text">2. 最终由CF的引用计数负责</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#由objc-associated-object-引发的循环引用"><span class="nav-number">6.</span> <span class="nav-text">由objc associated object 引发的循环引用</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">zjx</p>
+  <div class="site-description" itemprop="description">不积跬步，无以至千里</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分类</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">zjx</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
